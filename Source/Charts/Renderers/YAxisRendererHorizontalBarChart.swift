@@ -185,10 +185,20 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer
         context: CGContext,
         position: CGPoint)
     {
+        
+        var startYPos = viewPortHandler.contentTop
+        var endYPos = viewPortHandler.contentBottom
+        if let yAxis = self.axis as? YAxis,
+            yAxis.axisTickLength > 0 {
+            startYPos -= yAxis.axisTickLength
+            endYPos = yAxis.isDrawGridLinesEnabled ? viewPortHandler.contentBottom : viewPortHandler.contentTop
+        }
+        
         context.beginPath()
-        context.move(to: CGPoint(x: position.x, y: viewPortHandler.contentTop))
-        context.addLine(to: CGPoint(x: position.x, y: viewPortHandler.contentBottom))
+        context.move(to: CGPoint(x: position.x, y: startYPos))
+        context.addLine(to: CGPoint(x: position.x, y: endYPos))
         context.strokePath()
+        
     }
     
     open override func transformedPositions() -> [CGPoint]
@@ -225,7 +235,11 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer
         context.saveGState()
         defer { context.restoreGState() }
         
+        let tickLength = yAxis.axisTickLength > 0 ? yAxis.axisTickLength : 0
+        
         var clippingRect = viewPortHandler.contentRect
+        clippingRect.origin.y -= tickLength
+        clippingRect.size.height += tickLength
         clippingRect.origin.x -= yAxis.zeroLineWidth / 2.0
         clippingRect.size.width += yAxis.zeroLineWidth
         context.clip(to: clippingRect)
@@ -244,8 +258,8 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer
             context.setLineDash(phase: 0.0, lengths: [])
         }
         
-        context.move(to: CGPoint(x: pos.x - 1.0, y: viewPortHandler.contentTop))
-        context.addLine(to: CGPoint(x: pos.x - 1.0, y: viewPortHandler.contentBottom))
+        context.move(to: CGPoint(x: pos.x, y: viewPortHandler.contentTop-tickLength))
+        context.addLine(to: CGPoint(x: pos.x, y: viewPortHandler.contentBottom))
         context.drawPath(using: CGPathDrawingMode.stroke)
     }
     

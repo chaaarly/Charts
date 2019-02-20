@@ -163,12 +163,19 @@ open class YAxisRenderer: AxisRendererBase
         }
         
         if yAxis.drawGridLinesEnabled
+            || yAxis.axisTickLength > 0
         {
             let positions = transformedPositions()
             
             context.saveGState()
             defer { context.restoreGState() }
-            context.clip(to: self.gridClippingRect)
+            
+            var clippingRect = self.gridClippingRect
+            clippingRect.origin.y -= yAxis.axisTickLength
+            clippingRect.size.height += yAxis.axisTickLength
+            clippingRect.origin.x -= yAxis.gridLineWidth / 2.0
+            clippingRect.size.width += yAxis.gridLineWidth
+            context.clip(to: clippingRect)
             
             context.setShouldAntialias(yAxis.gridAntialiasEnabled)
             context.setStrokeColor(yAxis.gridColor.cgColor)

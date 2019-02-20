@@ -79,6 +79,9 @@ open class YAxis: AxisBase
     /// the horizontal offset of the y-label
     @objc open var labelXOffset: CGFloat = 10.0
     
+    /// CFO: YAxis value tick
+    @objc open var axisTickLength: CGFloat = 0.0
+    
     /// the side this axis object represents
     private var _axisDependency = AxisDependency.left
     
