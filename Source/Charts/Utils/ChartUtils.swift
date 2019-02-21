@@ -211,16 +211,34 @@ open class ChartUtils
         }
         else
         {
+            let size = text.size(withAttributes: attributes)
+            
             if anchor.x != 0.0 || anchor.y != 0.0
             {
-                let size = text.size(withAttributes: attributes)
-                
                 drawOffset.x = -size.width * anchor.x
                 drawOffset.y = -size.height * anchor.y
             }
             
             drawOffset.x += point.x
             drawOffset.y += point.y
+
+            
+            // CFO: Rounded corner background
+            if let backgroundColor = attributes?[NSAttributedString.Key.backgroundColor] as? UIColor {
+                context.saveGState()
+                context.setFillColor(backgroundColor.cgColor)
+                let horizontalMargin:CGFloat = 12.0
+                let verticalMargin:CGFloat = 5.0
+                let cornerRadius:CGFloat = 4.0
+                let backgroundRect = CGRect(x: drawOffset.x-horizontalMargin,
+                                            y: drawOffset.y-verticalMargin,
+                                            width: size.width+(2*horizontalMargin),
+                                            height: size.height+(2*verticalMargin))
+                let bezierPath = UIBezierPath(roundedRect: backgroundRect, cornerRadius: cornerRadius)
+                context.addPath(bezierPath.cgPath)
+                context.drawPath(using: .fill)
+            }
+            
             
             (text as NSString).draw(at: drawOffset, withAttributes: attributes)
         }

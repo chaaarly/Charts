@@ -155,7 +155,7 @@ open class XAxisRendererHorizontalBarChart: XAxisRenderer
                         formattedLabel: label,
                         x: pos,
                         y: position.y,
-                        attributes: [NSAttributedString.Key.font: labelFont, NSAttributedString.Key.foregroundColor: labelTextColor],
+                        attributes: [NSAttributedString.Key.font: labelFont, NSAttributedString.Key.foregroundColor: labelTextColor, NSAttributedString.Key.backgroundColor: xAxis.gridColor],
                         anchor: anchor,
                         angleRadians: labelRotationAngleRadians)
                 }
