@@ -503,18 +503,42 @@ open class LineChartRenderer: LineRadarRenderer
                     }
                     
                     if dataSet.isDrawValuesEnabled {
+                        
+                        let text = formatter.stringForValue(
+                            e.y,
+                            entry: e,
+                            dataSetIndex: i,
+                            viewPortHandler: viewPortHandler)
+                        
+                        var point = CGPoint(
+                            x: pt.x,
+                            y: pt.y - CGFloat(valOffset) - valueFont.lineHeight)
+                        
+                        let attributes = [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: dataSet.valueTextColorAt(j)]
+                        
+                        // CFO: Draw value text background
+                        if let backgroundColor = dataSet.color(atIndex: j).cgColor.copy(alpha: 0.7) {
+                            context.setFillColor(backgroundColor)
+                            let horizontalPadding:CGFloat = 10
+                            let verticalPadding:CGFloat = 4
+                            point.y = point.y-verticalPadding
+                            let textSize = text.size(withAttributes: attributes)
+                            let bezierPath = UIBezierPath(
+                                roundedRect: CGRect(
+                                    x: point.x - (textSize.width/2) - horizontalPadding,
+                                    y: point.y - verticalPadding,
+                                    width: textSize.width + 2*horizontalPadding,
+                                    height: textSize.height + 2*verticalPadding), cornerRadius: 6.0)
+                            context.addPath(bezierPath.cgPath)
+                            context.drawPath(using: .fill)
+                        }
+                        
                         ChartUtils.drawText(
                             context: context,
-                            text: formatter.stringForValue(
-                                e.y,
-                                entry: e,
-                                dataSetIndex: i,
-                                viewPortHandler: viewPortHandler),
-                            point: CGPoint(
-                                x: pt.x,
-                                y: pt.y - CGFloat(valOffset) - valueFont.lineHeight),
+                            text: text,
+                            point: point,
                             align: .center,
-                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: dataSet.valueTextColorAt(j)])
+                            attributes: attributes)
                     }
                     
                     if let icon = e.icon, dataSet.isDrawIconsEnabled
